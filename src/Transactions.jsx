@@ -39,10 +39,10 @@ export default function Transactions({ totalTrans, transArray, deleteTrans }) {
 
   if (totalTrans == 0) {
     return (
-      <div className="empty-transactions">
+      <section className="transactions transactions-empty">
         <h3>No transactions yet</h3>
-        <p>Add a new transaction above to get started.</p>
-      </div>
+        <p>Use New transaction to record your first entry.</p>
+      </section>
     );
   }
   return (

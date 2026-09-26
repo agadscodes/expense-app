@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLocalDateValue } from "./transactionHelpers";
 
-export default function TransactionForm({ addTrans }) {
+export default function TransactionForm({ addTrans, isOpen, onClose }) {
+  const dialogRef = useRef(null);
   const [transaction, setTransaction] = useState({
     id: "",
     description: "",
@@ -9,6 +10,14 @@ export default function TransactionForm({ addTrans }) {
     category: "",
     date: getLocalDateValue(),
   });
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen && !dialog.open) dialog.showModal();
+    if (!isOpen && dialog.open) dialog.close();
+  }, [isOpen]);
 
   function handleChange(event) {
     setTransaction((prev) => {
@@ -41,79 +50,104 @@ export default function TransactionForm({ addTrans }) {
       category: "",
       date: getLocalDateValue(),
     });
+    onClose();
   }
   return (
-    <form className="transaction-form" onSubmit={handleSubmit}>
-      <h2>Add New Transaction</h2>
-
-      {/* Description */}
-      <div className="form-group">
-        <label htmlFor="description">Description</label>
-        <input
-          value={transaction.description}
-          name="description"
-          type="text"
-          id="description"
-          placeholder="e.g., Grocery Shopping"
-          onChange={handleChange}
-          required
-        />
+    <dialog
+      className="transaction-modal"
+      ref={dialogRef}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === dialogRef.current) onClose();
+      }}
+    >
+      <div className="transaction-modal-header">
+        <div>
+          <p>PERSONAL FINANCE</p>
+          <h2>New transaction</h2>
+        </div>
+        <button
+          type="button"
+          className="modal-close-btn"
+          onClick={onClose}
+          aria-label="Close transaction form"
+        >
+          ×
+        </button>
       </div>
-
-      {/* Form Row: Amount & Category */}
-      <div className="form-row">
+      <form className="transaction-form" onSubmit={handleSubmit}>
+        {/* Description */}
         <div className="form-group">
-          <label htmlFor="amount">Amount</label>
+          <label htmlFor="description">Description</label>
           <input
-            value={transaction.amount}
+            value={transaction.description}
+            name="description"
+            type="text"
+            id="description"
+            placeholder="e.g., Grocery Shopping"
             onChange={handleChange}
-            name="amount"
-            type="number"
-            id="amount"
-            placeholder="0.00"
-            min="0.01"
-            step="100"
             required
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="category">Category</label>
-          <select
-            id="category"
-            value={transaction.category}
-            name="category"
-            onChange={handleChange}
-          >
-            <option value="" disabled>
-              Select a Category
-            </option>
-            <option value="income">Income</option>
-            <option value="food">Food & Dining</option>
-            <option value="housing">Housing & Utilities</option>
-            <option value="transportation">Transportation</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="other">Other</option>
-          </select>
+        {/* Form Row: Amount & Category */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="amount">Amount</label>
+            <input
+              value={transaction.amount}
+              onChange={handleChange}
+              name="amount"
+              type="number"
+              id="amount"
+              placeholder="0.00"
+              min="100"
+              step="100"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="category">Category</label>
+            <select
+              id="category"
+              value={transaction.category}
+              name="category"
+              onChange={handleChange}
+            >
+              <option value="" disabled>
+                Select a Category
+              </option>
+              <option value="income">Income</option>
+              <option value="food">Food & Dining</option>
+              <option value="housing">Housing & Utilities</option>
+              <option value="transportation">Transportation</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div className="form-group">
-        <label htmlFor="transaction-date">Date</label>
-        <input
-          value={transaction.date}
-          onChange={handleChange}
-          name="date"
-          type="date"
-          id="transaction-date"
-          required
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="transaction-date">Date</label>
+          <input
+            value={transaction.date}
+            onChange={handleChange}
+            name="date"
+            type="date"
+            id="transaction-date"
+            required
+          />
+        </div>
 
-      {/* Submit Button */}
-      <button type="submit" className="add-transaction-btn">
-        Add Transaction
-      </button>
-    </form>
+        {/* Submit Button */}
+        <button type="submit" className="add-transaction-btn">
+          Save transaction
+        </button>
+      </form>
+    </dialog>
   );
 }

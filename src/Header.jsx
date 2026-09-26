@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Header({ balance }) {
+function Header({ balance, onOpenForm }) {
   const [userName, setUserName] = useState(() => {
     try {
       return localStorage.getItem("expense-user-name") || "there";
@@ -26,9 +26,9 @@ function Header({ balance }) {
   }
 
   return (
-    <header className="expense-header">
-      <div className="welcome-copy">
-        <p className="welcome-eyebrow">Personal finance</p>
+    <header className="dashboard-header">
+      <div className="dashboard-welcome">
+        <p className="dashboard-eyebrow">Personal finance</p>
         <h1>Welcome back, {userName}</h1>
         <p>
           {new Intl.DateTimeFormat(undefined, { dateStyle: "full" }).format(
@@ -36,11 +36,18 @@ function Header({ balance }) {
           )}
         </p>
       </div>
-      <div className="header-actions">
-        <div className="balance-pill">
+      <div className="dashboard-controls">
+        <div className="dashboard-balance">
           <span>Current balance</span>
           <strong>${balance.toFixed(2)}</strong>
         </div>
+        <button
+          type="button"
+          className="new-transaction-btn"
+          onClick={onOpenForm}
+        >
+          <span aria-hidden="true">+</span> New transaction
+        </button>
         {isEditing ? (
           <form className="name-edit-form" onSubmit={saveName}>
             <input

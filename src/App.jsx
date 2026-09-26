@@ -7,6 +7,7 @@ import TransactionForm from "./TransactionForm";
 import Transactions from "./Transactions";
 
 function App() {
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [transArray, setTransArr] = useState(() => {
     try {
       const savedTransactions = localStorage.getItem("expense-transactions");
@@ -45,11 +46,22 @@ function App() {
   const totalTrans = transArray.length;
   return (
     <div className="expense-app">
-      <Header balance={currentBalance} />
-      <Summary transactions={transArray} />
-      <SpendingChart transactions={transArray} />
-      <Breakdown transactions={transArray} />
-      <TransactionForm addTrans={addTrans} />
+      <section className="dashboard" aria-label="Finance dashboard">
+        <Header
+          balance={currentBalance}
+          onOpenForm={() => setIsFormOpen(true)}
+        />
+        <Summary transactions={transArray} />
+        <div className="dashboard-insights">
+          <SpendingChart transactions={transArray} />
+          <Breakdown transactions={transArray} />
+        </div>
+      </section>
+      <TransactionForm
+        addTrans={addTrans}
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+      />
       <Transactions
         totalTrans={totalTrans}
         transArray={transArray}

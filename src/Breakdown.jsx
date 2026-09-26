@@ -42,7 +42,10 @@ export default function Breakdown({ transactions }) {
     .join(", ");
 
   return (
-    <section className="breakdown" aria-labelledby="breakdown-title">
+    <section
+      className="dashboard-panel breakdown"
+      aria-labelledby="breakdown-title"
+    >
       <div
         className="breakdown-chart"
         role="img"

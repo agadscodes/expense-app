@@ -1,10 +1,10 @@
 export const transactionTypes = {
-  income: { label: "Income", color: "#248a69" },
-  food: { label: "Food & Dining", color: "#e76f51" },
-  housing: { label: "Housing & Utilities", color: "#2a9d8f" },
-  transportation: { label: "Transportation", color: "#457b9d" },
-  entertainment: { label: "Entertainment", color: "#d39b35" },
-  other: { label: "Other", color: "#8d99ae" },
+  income: { label: "Income", color: "#d2a72c" },
+  food: { label: "Food & Dining", color: "#171717" },
+  housing: { label: "Housing & Utilities", color: "#e4c978" },
+  transportation: { label: "Transportation", color: "#5d5b54" },
+  entertainment: { label: "Entertainment", color: "#f0dfa8" },
+  other: { label: "Other", color: "#99978f" },
 };
 
 export function getTransactionDate(transaction) {

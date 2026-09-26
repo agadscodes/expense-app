@@ -14,10 +14,10 @@ function Summary({ transactions }) {
   });
 
   return (
-    <div className="summary">
+    <div className="dashboard-type-grid">
       {typeTotals.map((item) => (
         <div
-          className="summary-card"
+          className="dashboard-type-card"
           key={item.type}
           style={{ "--category-color": item.color }}
         >

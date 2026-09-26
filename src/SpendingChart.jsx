@@ -58,7 +58,7 @@ export default function SpendingChart({ transactions }) {
               <div className="spending-chart-column" key={month}>
                 <div className="spending-chart-bar-track">
                   <div
-                    className="spending-chart-bar"
+                    className={`spending-chart-bar${index === new Date().getMonth() ? " current-month" : ""}`}
                     style={{ height: `${height}%` }}
                     title={`${month}: $${amount.toFixed(2)}`}
                     aria-label={`${month}: $${amount.toFixed(2)}`}
