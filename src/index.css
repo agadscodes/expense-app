@@ -14,7 +14,6 @@ body {
   color: #1f2937;
 }
 
-
 /* ================================
    MAIN CONTAINER
 ================================ */
@@ -25,7 +24,6 @@ body {
   margin: 50px auto;
   padding: 0 20px;
 }
-
 
 /* ================================
    HEADER
@@ -45,7 +43,6 @@ body {
   font-size: 15px;
 }
 
-
 /* ================================
    SUMMARY CARDS
 ================================ */
@@ -62,6 +59,68 @@ body {
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 22px;
+}
+
+.breakdown {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) 1fr;
+  align-items: center;
+  gap: 30px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 25px;
+}
+
+.breakdown-chart {
+  width: 180px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--chart-stops, #e5e7eb 0% 100%));
+  justify-self: center;
+}
+
+.breakdown-content h2 {
+  font-size: 19px;
+  margin-bottom: 16px;
+}
+
+.breakdown-total {
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: -9px;
+  margin-bottom: 14px;
+}
+
+.breakdown-legend {
+  display: grid;
+  gap: 10px;
+}
+
+.breakdown-legend-item {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+
+.breakdown-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--category-color);
+}
+
+.breakdown-amount {
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.breakdown-empty {
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .summary-card p {
@@ -85,7 +144,6 @@ body {
 .expense-card h2 {
   color: #dc2626;
 }
-
 
 /* ================================
    FORM
@@ -132,7 +190,6 @@ body {
   border-color: #111827;
 }
 
-
 /* ================================
    FORM ROW
 ================================ */
@@ -142,7 +199,6 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
-
 
 /* ================================
    ADD BUTTON
@@ -164,7 +220,6 @@ body {
 .add-transaction-btn:hover {
   background: #374151;
 }
-
 
 /* ================================
    TRANSACTION SECTION
@@ -193,7 +248,6 @@ body {
   font-size: 13px;
   color: #6b7280;
 }
-
 
 /* ================================
    TRANSACTION ITEM
@@ -238,7 +292,6 @@ body {
   font-size: 12px;
 }
 
-
 /* ================================
    AMOUNT
 ================================ */
@@ -262,7 +315,6 @@ body {
   color: #dc2626;
 }
 
-
 /* ================================
    DELETE BUTTON
 ================================ */
@@ -279,7 +331,6 @@ body {
 .delete-transaction:hover {
   color: #dc2626;
 }
-
 
 /* ================================
    EMPTY STATE
@@ -300,13 +351,11 @@ body {
   font-size: 13px;
 }
 
-
 /* ================================
    MOBILE
 ================================ */
 
 @media (max-width: 650px) {
-
   .expense-app {
     margin: 30px auto;
   }
@@ -317,6 +366,15 @@ body {
 
   .summary {
     grid-template-columns: 1fr;
+  }
+
+  .breakdown {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .breakdown-chart {
+    width: 150px;
   }
 
   .form-row {
