@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "./Header";
 import Summary from "./Summary";
 import Breakdown from "./Breakdown";
+import SpendingChart from "./SpendingChart";
 import TransactionForm from "./TransactionForm";
 import Transactions from "./Transactions";
 
@@ -41,16 +42,12 @@ function App() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   const currentBalance = totalIncome - totalExpenses;
-  const dashBoard = {
-    currentBalance,
-    totalIncome,
-    totalExpenses,
-  };
   const totalTrans = transArray.length;
   return (
     <div className="expense-app">
-      <Header />
-      <Summary dashBoard={dashBoard} />
+      <Header balance={currentBalance} />
+      <Summary transactions={transArray} />
+      <SpendingChart transactions={transArray} />
       <Breakdown transactions={transArray} />
       <TransactionForm addTrans={addTrans} />
       <Transactions

@@ -1,19 +1,33 @@
-function Summary({dashBoard}) {
+import { transactionTypes } from "./transactionHelpers";
+
+function Summary({ transactions }) {
+  const typeTotals = Object.entries(transactionTypes).map(([type, details]) => {
+    const matchingTransactions = transactions.filter(
+      (transaction) => transaction.category === type,
+    );
+    const amount = matchingTransactions.reduce(
+      (total, transaction) => total + (Number(transaction.amount) || 0),
+      0,
+    );
+
+    return { type, ...details, amount, count: matchingTransactions.length };
+  });
 
   return (
     <div className="summary">
-      <div className="summary-card balance-card">
-        <p>Current Balance</p>
-        <h2>${dashBoard.currentBalance}</h2>
-      </div>
-      <div className="summary-card income-card">
-        <p>Total Income</p>
-        <h2>${dashBoard.totalIncome}</h2>
-      </div>
-      <div className="summary-card expense-card">
-        <p>Total Expenses</p>
-        <h2>${dashBoard.totalExpenses}</h2>
-      </div>
+      {typeTotals.map((item) => (
+        <div
+          className="summary-card"
+          key={item.type}
+          style={{ "--category-color": item.color }}
+        >
+          <p>{item.label}</p>
+          <h2>${item.amount.toFixed(2)}</h2>
+          <span>
+            {item.count} transaction{item.count === 1 ? "" : "s"}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

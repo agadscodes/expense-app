@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getLocalDateValue } from "./transactionHelpers";
 
 export default function TransactionForm({ addTrans }) {
   const [transaction, setTransaction] = useState({
@@ -6,6 +7,7 @@ export default function TransactionForm({ addTrans }) {
     description: "",
     amount: "",
     category: "",
+    date: getLocalDateValue(),
   });
 
   function handleChange(event) {
@@ -37,6 +39,7 @@ export default function TransactionForm({ addTrans }) {
       description: "",
       amount: "",
       category: "",
+      date: getLocalDateValue(),
     });
   }
   return (
@@ -68,6 +71,7 @@ export default function TransactionForm({ addTrans }) {
             type="number"
             id="amount"
             placeholder="0.00"
+            min="0.01"
             step="100"
             required
           />
@@ -92,6 +96,18 @@ export default function TransactionForm({ addTrans }) {
             <option value="other">Other</option>
           </select>
         </div>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="transaction-date">Date</label>
+        <input
+          value={transaction.date}
+          onChange={handleChange}
+          name="date"
+          type="date"
+          id="transaction-date"
+          required
+        />
       </div>
 
       {/* Submit Button */}

@@ -1,9 +1,11 @@
+import { transactionTypes } from "./transactionHelpers";
+
 const categories = {
-  food: { label: "Food & Dining", color: "#e76f51" },
-  housing: { label: "Housing & Utilities", color: "#2a9d8f" },
-  transportation: { label: "Transportation", color: "#457b9d" },
-  entertainment: { label: "Entertainment", color: "#e9c46a" },
-  other: { label: "Other", color: "#8d99ae" },
+  food: transactionTypes.food,
+  housing: transactionTypes.housing,
+  transportation: transactionTypes.transportation,
+  entertainment: transactionTypes.entertainment,
+  other: transactionTypes.other,
 };
 
 export default function Breakdown({ transactions }) {
