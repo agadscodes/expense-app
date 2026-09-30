@@ -1,6 +1,7 @@
 import {
   getLocalDateValue,
   getTransactionDate,
+  formatCurrency,
   transactionTypes,
 } from "./transactionHelpers";
 
@@ -9,11 +10,29 @@ function escapeCsv(value) {
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
-export default function Transactions({ totalTrans, transArray, deleteTrans }) {
+function formatDate(value) {
+  if (!value) return "Date unavailable";
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${value}T12:00:00`));
+}
+
+export default function Transactions({
+  totalTrans,
+  allCount,
+  transArray,
+  allTransactions,
+  deleteTrans,
+  onOpenForm,
+  currency,
+  locale,
+}) {
   function downloadCsv() {
     const rows = [
       ["Date", "Description", "Type", "Category", "Amount"],
-      ...transArray.map((transaction) => {
+      ...allTransactions.map((transaction) => {
         const isIncome = transaction.category === "income";
         const amount = Number(transaction.amount) || 0;
         return [
@@ -37,74 +56,109 @@ export default function Transactions({ totalTrans, transArray, deleteTrans }) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  if (totalTrans == 0) {
-    return (
-      <section className="transactions transactions-empty">
-        <h3>No transactions yet</h3>
-        <p>Use New transaction to record your first entry.</p>
-      </section>
-    );
-  }
+  const sortedTransactions = [...transArray].sort((first, second) =>
+    getTransactionDate(second).localeCompare(getTransactionDate(first)),
+  );
+
   return (
-    <div className="transactions">
-      {/* Header */}
+    <section
+      className="dashboard-panel transactions"
+      aria-labelledby="transactions-title"
+    >
       <div className="transactions-header">
-        <h2>All Transactions</h2>
+        <div>
+          <h2 id="transactions-title">Recent Transactions</h2>
+          <p>Review your latest financial activity.</p>
+        </div>
         <div className="transactions-header-actions">
-          <span>Showing {totalTrans} transactions</span>
+          <span>
+            {totalTrans === allCount
+              ? `${allCount} total`
+              : `${totalTrans} of ${allCount}`}
+          </span>
+          <button
+            type="button"
+            className="new-transaction-btn"
+            onClick={onOpenForm}
+          >
+            <span aria-hidden="true">+</span> New transaction
+          </button>
           <button
             type="button"
             className="download-csv-btn"
             onClick={downloadCsv}
+            disabled={allCount === 0}
           >
             Download CSV
           </button>
         </div>
       </div>
-
-      {/* Transaction List */}
-      <div className="transaction-list">
-        {transArray.map((item) => {
-          const isIncome = item.category == "income";
-          return (
-            <div className="transaction-item" key={item.id}>
-              <div className="transaction-info">
-                <div className="transaction-icon">🛒</div>
-                <div className="transaction-details">
-                  <h3>{item.description}</h3>
-                  <p>
-                    {getTransactionDate(item)
-                      ? new Intl.DateTimeFormat(undefined, {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        }).format(
-                          new Date(`${getTransactionDate(item)}T12:00:00`),
-                        )
-                      : "Date unavailable"}
-                  </p>
-                </div>
-              </div>
-              <div className="transaction-right">
-                <span
-                  className={`transaction-amount ${isIncome ? "income" : "expense"}`}
-                >
-                  {isIncome ? "+" : "-"}
-                  {item.amount}
-                </span>
-                <button
-                  type="button"
-                  className="delete-transaction"
-                  onClick={() => deleteTrans(item.id)}
-                  aria-label={`Delete ${item.description}`}
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          );
-        })}
+      <div className="transaction-table-scroll">
+        <table className="transaction-table">
+          <thead>
+            <tr>
+              <th scope="col">Transaction</th>
+              <th scope="col">Category</th>
+              <th scope="col">Date</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Status</th>
+              <th scope="col">
+                <span className="visually-hidden">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedTransactions.length > 0 ? (
+              sortedTransactions.map((transaction) => {
+                const isIncome = transaction.category === "income";
+                return (
+                  <tr key={transaction.id}>
+                    <td className="table-description">
+                      {transaction.description}
+                    </td>
+                    <td>
+                      <span className="table-category">
+                        {transactionTypes[transaction.category]?.label ??
+                          "Other"}
+                      </span>
+                    </td>
+                    <td className="table-date">
+                      {formatDate(getTransactionDate(transaction))}
+                    </td>
+                    <td
+                      className={`table-amount ${isIncome ? "income" : "expense"}`}
+                    >
+                      {isIncome ? "+" : "-"}
+                      {formatCurrency(transaction.amount, currency, locale)}
+                    </td>
+                    <td>
+                      <span className="table-status">Completed</span>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="delete-transaction"
+                        onClick={() => deleteTrans(transaction.id)}
+                        aria-label={`Delete ${transaction.description}`}
+                      >
+                        ×
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td className="table-empty" colSpan="6">
+                  {allCount === 0
+                    ? "No transactions yet. Add one to see it here."
+                    : "No transactions match your search."}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-    </div>
+    </section>
   );
 }

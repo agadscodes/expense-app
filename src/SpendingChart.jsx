@@ -1,74 +1,81 @@
-import { getTransactionDate } from "./transactionHelpers";
+import {
+  formatCurrency,
+  getLocalDateValue,
+  getTransactionDate,
+} from "./transactionHelpers";
 
-const monthLabels = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-export default function SpendingChart({ transactions }) {
-  const year = new Date().getFullYear();
-  const monthlySpending = Array(12).fill(0);
-
-  transactions.forEach((transaction) => {
-    if (transaction.category === "income") return;
-
-    const dateValue = getTransactionDate(transaction);
-    if (!dateValue) return;
-
-    const date = new Date(`${dateValue}T12:00:00`);
-    if (date.getFullYear() === year) {
-      monthlySpending[date.getMonth()] += Number(transaction.amount) || 0;
-    }
+export default function SpendingChart({ transactions, currency, locale }) {
+  const today = new Date();
+  const days = Array.from({ length: 8 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (7 - index));
+    const dateValue = getLocalDateValue(date);
+    const amount = transactions
+      .filter(
+        (transaction) =>
+          transaction.category !== "income" &&
+          getTransactionDate(transaction) === dateValue,
+      )
+      .reduce(
+        (total, transaction) => total + (Number(transaction.amount) || 0),
+        0,
+      );
+    return { date, dateValue, amount };
   });
-
-  const maxSpending = Math.max(...monthlySpending, 1);
+  const maxSpending = Math.max(...days.map((day) => day.amount), 1);
+  const totalSpending = days.reduce((total, day) => total + day.amount, 0);
+  const axisValues = [1, 0.75, 0.5, 0.25, 0];
 
   return (
-    <section className="spending-chart" aria-labelledby="spending-chart-title">
-      <div className="spending-chart-header">
+    <section
+      className="dashboard-panel spending-chart"
+      aria-labelledby="spending-chart-title"
+    >
+      <div className="panel-heading">
         <div>
-          <h2 id="spending-chart-title">Spending Overview</h2>
-          <p>Monthly expenses in {year}</p>
+          <h2 id="spending-chart-title">Spending Trend</h2>
+          <p>Daily spending over the last 8 days</p>
         </div>
-        <strong>
-          $
-          {monthlySpending
-            .reduce((total, amount) => total + amount, 0)
-            .toFixed(2)}
-        </strong>
+        <span className="panel-period">This month</span>
       </div>
-      <div className="spending-chart-scroll">
-        <div className="spending-chart-bars">
-          {monthLabels.map((month, index) => {
-            const amount = monthlySpending[index];
-            const height =
-              amount > 0 ? Math.max((amount / maxSpending) * 100, 3) : 0;
-
-            return (
-              <div className="spending-chart-column" key={month}>
-                <div className="spending-chart-bar-track">
-                  <div
-                    className={`spending-chart-bar${index === new Date().getMonth() ? " current-month" : ""}`}
-                    style={{ height: `${height}%` }}
-                    title={`${month}: $${amount.toFixed(2)}`}
-                    aria-label={`${month}: $${amount.toFixed(2)}`}
-                  />
-                </div>
-                <span>{month}</span>
-              </div>
-            );
-          })}
+      <div className="trend-chart">
+        <div className="trend-axis" aria-hidden="true">
+          {axisValues.map((ratio) => (
+            <span key={ratio}>
+              {formatCurrency(maxSpending * ratio, currency, locale, 0)}
+            </span>
+          ))}
         </div>
+        <div className="trend-plot">
+          <div className="trend-gridlines" aria-hidden="true">
+            {axisValues.map((ratio) => (
+              <span key={ratio} />
+            ))}
+          </div>
+          <div className="trend-bars">
+            {days.map((day) => {
+              const height = day.amount
+                ? Math.max((day.amount / maxSpending) * 100, 3)
+                : 0;
+              const isToday = day.dateValue === getLocalDateValue(today);
+              return (
+                <div className="trend-bar-column" key={day.dateValue}>
+                  <div
+                    className={`trend-bar${isToday ? " is-today" : ""}`}
+                    style={{ height: `${height}%` }}
+                    title={`${day.date.toLocaleDateString(locale)}: ${formatCurrency(day.amount, currency, locale)}`}
+                    aria-label={`${day.date.toLocaleDateString(locale)}: ${formatCurrency(day.amount, currency, locale)}`}
+                  />
+                  <span>{day.date.getDate()}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="trend-footer">
+        <span>Last 8 days</span>
+        <strong>{formatCurrency(totalSpending, currency, locale)}</strong>
       </div>
     </section>
   );

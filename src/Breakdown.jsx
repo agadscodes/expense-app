@@ -35,8 +35,8 @@ export default function Breakdown({ transactions }) {
   const chartStops = breakdown
     .map((item, index) => {
       const start = progress;
-      progress += (item.amount / totalExpenses) * 100;
-      const end = index === breakdown.length - 1 ? 100 : progress;
+      progress += (item.amount / totalExpenses) * 50;
+      const end = index === breakdown.length - 1 ? 50 : progress;
       return `${item.color} ${start}% ${end}%`;
     })
     .join(", ");
@@ -46,23 +46,34 @@ export default function Breakdown({ transactions }) {
       className="dashboard-panel breakdown"
       aria-labelledby="breakdown-title"
     >
-      <div
-        className="breakdown-chart"
-        role="img"
-        aria-label={
-          totalExpenses > 0
-            ? `Expense breakdown totaling $${totalExpenses.toFixed(2)}`
-            : "No expense data yet"
-        }
-        style={{
-          background: chartStops ? `conic-gradient(${chartStops})` : "#e5e7eb",
-        }}
-      />
       <div className="breakdown-content">
-        <h2 id="breakdown-title">Expense Breakdown</h2>
+        <div className="panel-heading">
+          <div>
+            <h2 id="breakdown-title">Spending Breakdown</h2>
+            <p>See where your money goes.</p>
+          </div>
+          <span className="panel-period">This month</span>
+        </div>
         {totalExpenses > 0 ? (
           <>
-            <p className="breakdown-total">${totalExpenses.toFixed(2)} total</p>
+            <div
+              className="breakdown-chart"
+              role="img"
+              aria-label={`Spending breakdown totaling $${totalExpenses.toFixed(2)}`}
+            >
+              <div
+                className="breakdown-arc"
+                style={{
+                  background: `conic-gradient(from 270deg, ${chartStops}, #ecece9 50% 100%)`,
+                }}
+              />
+              <div className="breakdown-hole" />
+              <div className="breakdown-center">
+                <strong>100%</strong>
+                <span>Total</span>
+              </div>
+            </div>
+            <p className="breakdown-total">${totalExpenses.toFixed(2)} spent</p>
             <div className="breakdown-legend">
               {breakdown.map((item) => (
                 <div className="breakdown-legend-item" key={item.label}>
@@ -80,7 +91,17 @@ export default function Breakdown({ transactions }) {
             </div>
           </>
         ) : (
-          <p className="breakdown-empty">No expense data yet</p>
+          <div className="breakdown-empty-state">
+            <div
+              className="breakdown-chart"
+              role="img"
+              aria-label="No spending recorded this month"
+            >
+              <div className="breakdown-arc" />
+              <div className="breakdown-hole" />
+            </div>
+            <p className="breakdown-empty">No expenses recorded this month.</p>
+          </div>
         )}
       </div>
     </section>

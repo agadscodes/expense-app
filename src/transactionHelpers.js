@@ -22,3 +22,16 @@ export function getLocalDateValue(date = new Date()) {
   );
   return localDate.toISOString().slice(0, 10);
 }
+
+export function formatCurrency(
+  amount,
+  currency = "USD",
+  locale = "en-US",
+  maximumFractionDigits = 2,
+) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    maximumFractionDigits,
+  }).format(Number(amount) || 0);
+}
